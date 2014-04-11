@@ -1,0 +1,96 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+/**
+ *
+ * @author Jairo
+ */
+public class ochoreinass {
+    final int fila;
+    final int columna;
+    int[][] tablero;//declaro mi variable array
+    int     contador;
+ 
+    public ochoreinass(int x) {
+        fila    = x;
+        columna = x;
+        tablero     = new int[x][x];
+    }
+ 
+    public void crearTablero() {//cre mi tablero utilizando "|"
+        for(int i=0; i<tablero.length; i++) {
+            for(int j=0; j<tablero[i].length; j++) {
+                if(tablero[i][j]>0) System.out.printf("  %2d  |", tablero[i][j]);
+                else System.out.printf("      |", tablero[i][j]);
+            }
+            System.out.println();
+            for(int j=0; j<tablero[i].length; j++) System.out.print("------+");
+            System.out.println();
+        }
+    }
+ //f=fila
+ //c=columna
+    public boolean resolverProblema(int f, int c, int num) {
+            contador++;
+            tablero[f][c] = num;
+            if(num==fila) return true;
+            int[][] posibles = buscarPosibles();
+            for(int i=0; i<posibles.length; i++) {
+                if(resolverProblema(posibles[i][0], posibles[i][1], num+1)) return true;
+            }
+            tablero[f][c]=0;
+            return false;
+    }
+ 
+    int[][] buscarPosibles() {
+        int[][] resp = new int[fila*columna][2];
+        int[] sumafila = new int[columna];
+        int[] sumacolumna = new int[fila];
+        int     pos  = 0;
+        for(int i=0; i<fila; i++) {
+            for(int j=0; j<columna; j++) {
+                if(tablero[i][j]>0) {
+                    sumafila[i]++;
+                    sumacolumna[j]++;
+                }
+            }
+        }
+        for(int i=0; i<fila; i++) {
+            if(sumafila[i]>0) continue;
+            for(int j=0; j<columna; j++) {
+                if(sumacolumna[j]>0) continue;
+                if(i>0 && j>0             && tablero[i-1][j-1] > 0) continue;
+                if(i>0 && j<columna-1 && tablero[i-1][j+1] > 0) continue;
+                if(i<fila-1 && j>0    && tablero[i+1][j-1] > 0) continue;
+                if(i<fila-1 && j<columna-1 && tablero[i+1][j+1] > 0) continue;
+                resp[pos][0]=i;
+                resp[pos][1]=j;
+                pos++;
+            }
+        }
+        int[][] tmp = new int[pos][2];
+        for(int i=0; i<pos; i++) { tmp[i][0] = resp[i][0]; tmp[i][1]=resp[i][1]; }
+        return tmp;
+    }
+ 
+    boolean esValido(int f, int c) {
+        if(f<0 || f>fila-1 || c<0 || c>columna-1) return false;
+        if(tablero[f][c]!=0) return false;
+        return true;
+    }
+ 
+    public static void main(String[] args) {
+        java.util.Random rnd  = new java.util.Random();
+        int numFilas      = 8;
+        int filaInicial   = rnd.nextInt(numFilas);
+        int colInicial    = rnd.nextInt(numFilas);
+       ochoreinass pr = new ochoreinass(8);
+        pr.resolverProblema(filaInicial, colInicial,1);
+        pr.crearTablero();
+    }
+}
+/*La posicion en la que las reinas estan en el tablero es la misma 
+ * lo unico que va cambiando es la rotacion de estas.
+ */
